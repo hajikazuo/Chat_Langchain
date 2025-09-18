@@ -1,65 +1,27 @@
-import os
-from dotenv import load_dotenv
-load_dotenv()
+import streamlit as st
+from chat import chat_assistant
 
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
+st.title("Assistente de Viagem")
 
-template = """[INST]Você é um assistente de viagem. Ajude o usuário a planejar viagens com sugestões de destinos, roteiros e dicas práticas.
-Sempre comece perguntando:
-1. Para onde o usuário vai viajar?
-2. Com quantas pessoas?
-3. Por quantos dias?
+if "session_id" not in st.session_state:
+    st.session_state.session_id = "user123"
+if "histórico" not in st.session_state:
+    st.session_state.histórico = []
+if "input" not in st.session_state:
+    st.session_state.input = ""
 
-Histórico da conversa:
-{history}
+def enviar_mensagem():
+    if st.session_state.input:
+        pergunta = st.session_state.input
+        resposta = chat_assistant(st.session_state.session_id, pergunta)
+        st.session_state.histórico.append(("Você", pergunta))
+        st.session_state.histórico.append(("Assistente", resposta))
+        st.session_state.input = ""
 
-Pergunta do usuário: {input}"""
+for speaker, message in st.session_state.histórico:
+    if speaker == "Você":
+        st.markdown(f"<div style='text-align: left; background-color:#DCF8C6; color:#000; padding:8px; border-radius:8px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='text-align: left; background-color:#FFF; color:#000; padding:8px; border-radius:8px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
 
-prompt = ChatPromptTemplate.from_messages([
-    ("system", template),
-    MessagesPlaceholder(variable_name="history"),
-    ("human", "{input}")
-])
-
-llm = ChatGroq(
-    model="llama-3.1-8b-instant",  
-    temperature=0.7,
-    api_key=os.getenv("GROQ_API_KEY")
-)
-chain = prompt | llm
-
-store = {}
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
-
-chain_with_history = RunnableWithMessageHistory(
-    chain,
-    get_session_history,
-    input_messages_key="input",
-    history_messages_key="history"
-)
-
-def chat_assistant():
-    print("Bem-vindo ao Assistente de Viagem! Digite 'sair' para encerrar.\n")
-    while True:
-        user_input = input("Você: ")
-
-        if user_input.lower() in ["sair", "exit"]:
-            print("Até mais! Boa viagem!")
-            break
-
-        response = chain_with_history.invoke(
-            {"input": user_input},
-            config={"configurable": {"session_id": 'user123'}}
-        )
-
-        print("Assistente:", response.content)
-
-if __name__ == "__main__":
-    chat_assistant()
+st.text_input("Pergunte alguma coisa:", key="input", on_change=enviar_mensagem)

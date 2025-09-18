@@ -3,3 +3,4 @@ langchain-openai
 langchain-community
 langchain-groq
 python-dotenv
+streamlit
