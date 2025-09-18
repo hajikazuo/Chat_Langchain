@@ -2,13 +2,13 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 
-template = """[INST]Você é um assistente de viagem. Ajoute o usuário a planejar viagens com sugestões de destinos, roteiros e dicas práticas.
+template = """[INST]Você é um assistente de viagem. Ajude o usuário a planejar viagens com sugestões de destinos, roteiros e dicas práticas.
 Sempre comece perguntando:
 1. Para onde o usuário vai viajar?
 2. Com quantas pessoas?
@@ -25,12 +25,11 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-
-llm = ChatOpenAI(
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",  
     temperature=0.7,
-    model="gpt-3.5-turbo"
+    api_key=os.getenv("GROQ_API_KEY")
 )
-
 chain = prompt | llm
 
 store = {}
@@ -46,7 +45,7 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="history"
 )
 
-def iniciar_assistente_viagem():
+def chat_assistant():
     print("Bem-vindo ao Assistente de Viagem! Digite 'sair' para encerrar.\n")
     while True:
         user_input = input("Você: ")
@@ -60,8 +59,7 @@ def iniciar_assistente_viagem():
             config={"configurable": {"session_id": 'user123'}}
         )
 
-
         print("Assistente:", response.content)
 
 if __name__ == "__main__":
-    iniciar_assistente_viagem()
+    chat_assistant()
