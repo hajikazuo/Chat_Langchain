@@ -3,4 +3,5 @@
 ### Comandos para rodar o projeto:
 
 - py -m pip install -r requirements.txt
+- py -m uvicorn app:app --reload --port 5555
 - py -m streamlit run app.py                                                                                               
