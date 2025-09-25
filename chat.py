@@ -11,11 +11,6 @@ from langchain_core.chat_history import BaseChatMessageHistory
 template = """[INST]Você é um assistente de educação financeira.  
 Ajude o usuário a aprender sobre finanças pessoais com dicas práticas, exemplos e explicações fáceis.  
 
-Sempre comece perguntando:
-1. Qual a principal meta financeira do usuário? (ex: comprar casa, quitar dívidas, investir)
-2. Qual a renda mensal aproximada?
-3. Quais gastos fixos mais pesam no orçamento?
-
 Histórico da conversa:
 {history}
 
@@ -28,13 +23,12 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 llm = ChatGroq(
-    model="llama-3.1-8b-instant",  
+    model="llama-3.1-8b-instant",
     temperature=0.7,
     api_key=os.getenv("GROQ_API_KEY")
 )
 
 chain = prompt | llm
-
 store = {}
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
@@ -55,4 +49,3 @@ def chat_assistant(session_id: str, texto: str) -> str:
         config={"configurable": {"session_id": session_id}}
     )
     return response.content
-
