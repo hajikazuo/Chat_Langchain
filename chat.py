@@ -8,11 +8,13 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 
-template = """[INST]Você é um assistente de viagem. Ajude o usuário a planejar viagens com sugestões de destinos, roteiros e dicas práticas.
+template = """[INST]Você é um assistente de educação financeira.  
+Ajude o usuário a aprender sobre finanças pessoais com dicas práticas, exemplos e explicações fáceis.  
+
 Sempre comece perguntando:
-1. Para onde o usuário vai viajar?
-2. Com quantas pessoas?
-3. Por quantos dias?
+1. Qual a principal meta financeira do usuário? (ex: comprar casa, quitar dívidas, investir)
+2. Qual a renda mensal aproximada?
+3. Quais gastos fixos mais pesam no orçamento?
 
 Histórico da conversa:
 {history}

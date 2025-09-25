@@ -1,27 +1,27 @@
 import streamlit as st
 from chat import chat_assistant
 
-st.title("Assistente de Viagem")
+st.set_page_config(page_title="Assistente de Educação Financeira", page_icon="💰")
+st.title("💬 Assistente de Educação Financeira")
+st.caption("🚀 Seu guia para organizar, poupar e investir melhor")
 
-if "session_id" not in st.session_state:
-    st.session_state.session_id = "user123"
-if "histórico" not in st.session_state:
-    st.session_state.histórico = []
-if "input" not in st.session_state:
-    st.session_state.input = ""
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [
+        {"role": "assistant", "content": "Olá! Eu sou seu assistente financeiro. "
+                                         "Antes de começarmos, me conte: "
+                                         "qual é sua principal meta financeira (ex: quitar dívidas, comprar casa, investir)?"}
+    ]
 
-def enviar_mensagem():
-    if st.session_state.input:
-        pergunta = st.session_state.input
-        resposta = chat_assistant(st.session_state.session_id, pergunta)
-        st.session_state.histórico.append(("Você", pergunta))
-        st.session_state.histórico.append(("Assistente", resposta))
-        st.session_state.input = ""
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
 
-for speaker, message in st.session_state.histórico:
-    if speaker == "Você":
-        st.markdown(f"<div style='text-align: left; background-color:#DCF8C6; color:#000; padding:8px; border-radius:8px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div style='text-align: left; background-color:#FFF; color:#000; padding:8px; border-radius:8px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
+if pergunta := st.chat_input("Pergunte alguma coisa:"):
 
-st.text_input("Pergunte alguma coisa:", key="input", on_change=enviar_mensagem)
+    st.session_state.messages.append({"role": "user", "content": pergunta})
+    st.chat_message("user").write(pergunta)
+
+    resposta = chat_assistant("user123", pergunta)
+
+    st.session_state.messages.append({"role": "assistant", "content": resposta})
+    st.chat_message("assistant").write(resposta)
+

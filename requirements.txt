@@ -1,6 +1,10 @@
-langchain-core
-langchain-openai
-langchain-community
-langchain-groq
+fastapi
+uvicorn[standard]
+pymongo
 python-dotenv
-streamlit
+passlib[bcrypt]
+pyjwt
+langchain-core
+langchain-groq
+langchain-community
+
